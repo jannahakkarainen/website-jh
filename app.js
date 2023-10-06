@@ -1,6 +1,6 @@
 const express = require('express') // loads the express package
 const { engine } = require('express-handlebars'); // loads handlebars for Express
-const port = 8080 // defines the port
+const port = 2020 // defines the port
 const app = express() // creates the Express application
 
 // defines handlebars engine
@@ -28,26 +28,21 @@ app.get('/', function(request, response){
   response.render('home.handlebars')
 })
 
-// defines route "/humans"
-app.get('/humans', function(request, response){
-  const model = { listHumans: humans } // defines the model
-  // in the next line, you should send the abovedefined 
-  // model to the page and not an empty object {}...
-  response.render('humans.handlebars', model)
+app.get('/about', function(request, response){
+  response.render('about.handlebars')
 })
 
-app.get('/humans/:id', function(request, response){
-  const id = request.params.id; // Get the id from the dynamic route
+app.get('/projects', function(request, response){
+  response.render('projects.handlebars')
+})
 
-  // Find the person with the specified ID
-  const person = humans.find(person => person.id === id);
+app.get('/skills', function(request, response){
+  response.render('skills.handlebars')
+})
 
-  if (person) {
-    response.render('human.handlebars', person); // Pass the data of the found person
-  } else {
-    response.status(404).render('404.handlebars'); // Handle 404 if person not found
-  }
-});
+app.get('/contact', function(request, response){
+  response.render('contact.handlebars')
+})
 
 
 // defines the final default route 404 NOT FOUND
