@@ -25,19 +25,19 @@ body {
     margin-bottom: 96px;
     margin-top: 0px;
     box-sizing: content-box;
-    /*border: 3px solid gray;*/
+
 }
 
 #menu ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    display: flex; /* Use flexbox to create a horizontal layout */
-    justify-content: center; /* Center the menu items horizontally */
+    display: flex;
+    justify-content: center;
 }
 
 #menu ul li {
-    margin: 0 10px; /* Add spacing between menu items */
+    margin: 0 10px;
 }
 
 #menu ul li a {
@@ -51,6 +51,19 @@ body {
 #menu ul li a:hover {
     color: #685959;
 }
+
+
+@media (max-width: 880px) {
+    #menu ul {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    #menu ul li {
+        margin: 10px 0;
+    }
+}
+
 
 #header-image {
     text-align: center; 
@@ -81,3 +94,4 @@ body {
     background-color: bisque;
     box-sizing: border-box;
 }
+
