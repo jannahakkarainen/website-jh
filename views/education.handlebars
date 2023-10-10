@@ -1,6 +1,19 @@
 <div id="main">
     <div>
-        <h1>About Me</h1>
-    </div>
-  
+        <h1>My Education</h1>
+        {{#if hasDatabaseError}}
+        <div>
+            Sorry, there was a problem with the database <br />
+            {{theError}}
+        </div>
+        {{else}}
+            {{#each education}}
+                <div class="education">
+                    <h2>{{sname}}</h2>
+                    <p>{{shp}}</p>
+                    <p>Type: {{sdesc}}</p>
+                </div>
+           {{/each}}
+        {{/if}}
+  </div>
 </div>

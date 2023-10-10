@@ -1,11 +1,19 @@
 <div id="main">
     <div>
-        <h1>Skills</h1>
-    </div>
-<li>C++</li>
-<li>NoSQL</li>
-<li>html</li>
-<li>css</li>
-
-
+        <h1>My Skills</h1>
+        {{#if hasDatabaseError}}
+        <div>
+            Sorry, there was a problem with the database <br />
+            {{theError}}
+        </div>
+        {{else}}
+            {{#each skills}}
+                <div class="skill">
+                    <h2>{{sname}}</h2>
+                    <p>{{sdesc}}</p>
+                    <p>Type: {{stype}}</p>
+                </div>
+           {{/each}}
+        {{/if}}
+  </div>
 </div>
