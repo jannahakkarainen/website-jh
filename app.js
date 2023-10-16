@@ -8,23 +8,29 @@ const connectSqlite3 = require('connect-sqlite3')
 const cookieParser = require('cookie-parser')
 
 
+
 // MODEL (DATA)
 const sqlite3 = require('sqlite3')
 const db = new sqlite3.Database('projects-jh.db')
 
 // creates table projects at startup 
-db.run("CREATE TABLE projects (pid INTEGER PRIMARY KEY, pname TEXT NOT NULL, pyear INTEGER NOT NULL, pdesc TEXT NOT NULL, ptype TEXT NOT NULL, pimgURL TEXT NOT NULL)", (error) => { 
+db.run("CREATE TABLE projects (pid INTEGER PRIMARY KEY AUTOINCREMENT, pname TEXT NOT NULL, pyear INTEGER NOT NULL, pdesc TEXT NOT NULL, ptype TEXT NOT NULL, pimgURL TEXT NOT NULL)", (error) => { 
   if (error) {
-  // tests error: display error console.log("ERROR: ", error) 
+  // tests error: display error 
+  console.log("ERROR: ", error) 
   } else {
-  // tests error: no error, the table has been created console.log("---> Table projects created!") 
+  // tests error: no error, the table has been created 
+  console.log("---> Table projects created!") 
 
 
   const projects=[
-  { "id":"1", "name":"Cv with html", "type":" school project", "desc": "The purpose of this project was to try out html for the first time", "year": 2023, "url":"/img/img1.png" }, 
-  { "id":"2", "name":"Cv with html and css", "type":" school project", "desc": " The purpose of this project was to try out html in combination with css for the first time", "year": 2023, "url":"/img/img2.png" }, 
-  { "id":"3", "name":"Cv with multiple pages", "type":"school project", "desc": " The purpose of this project was to try out html and css and to create a webpage with multiple pages for the first time", "year": 2023, "url":"/img/img3.png" } 
-  ]
+  { "id":"1", "name":"Cv with html", "type":" School project", "desc": "The purpose of this project was to try out html for the first time", "year": 2023, "url":"/img/img1.png" }, 
+  { "id":"2", "name":"Cv with html and css", "type":" School project", "desc": " The purpose of this project was to try out html in combination with css for the first time", "year": 2023, "url":"/img/img2.png" }, 
+  { "id":"3", "name":"Cv with multiple pages", "type":"School project", "desc": " The purpose of this project was to try out html and css and to create a webpage with multiple pages for the first time", "year": 2023, "url":"/img/img3.png" }, 
+  { "id":"4", "name": "Photo editing project with filters", "type": "Personal project", "desc": "Editing in photoshop using only filters", "year": 2013, "url": "/img/img4.png" },
+  { "id":"5", "name": " Photo editing project with filters and removing objects", "type": " Personal project", "desc": "Editing in photoshop using filters and tools to remove unwanted objects", "year": 2013, "url": "/img/img5.png" }
+
+]
 
 
   // inserts projects 
@@ -51,7 +57,8 @@ const skills=[
 {"id":"2", "name": "NoSQL", "type": "Programming language", "desc": "Working with databases in NoSQL."},
 {"id":"3", "name": "html", "type": "Markup language", "desc": "Creating web pages with html."},
 {"id":"4", "name": "css", "type": "Stylesheet language", "desc": "Designing web pages with css."},
-{"id":"5", "name": "Javascript", "type": "Programming language", "desc": "Programming with Javascript."}, {"id":"6", "name": "Adobe-Programs", "type": "Photo editing programs", "desc": "Using all adobe programs to edit photos"},
+{"id":"5", "name": "Javascript", "type": "Programming language", "desc": "Programming with Javascript."}, 
+{"id":"6", "name": "Adobe-Programs", "type": "Photo editing programs", "desc": "Using all adobe programs to edit photos"},
 ] 
   // inserts skills
 skills.forEach( (oneSkill) => {
@@ -205,6 +212,32 @@ app.get('/projects', function(request, response){
     }
   })
 })
+
+
+
+
+
+
+app.get('/projects/:id', function(request, response) {
+  const projectId = request.params.id;
+  console.log('Project ID:', projectId);
+
+  db.get("SELECT * FROM projects WHERE pid = ?", [projectId], function(error, project) {
+    if (error) {
+      console.log('Error:', error);
+      // Handle the error
+    } else {
+      console.log('Project Data:', project);
+      response.render("project.handlebars", { project: project });
+    }
+  });
+});
+
+
+
+
+
+
 
 //renders the login page
 app.get('/login', (request, response) => {

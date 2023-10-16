@@ -16,7 +16,7 @@
                     <br />
                     <label for="projtype">Project type: </label>
                     <select name="projtype" id="projtype" required="required">
-                        <option value="Research"{{#if (theTypeR project.ptype)}} selected="selected"{{/if}}>Research</option>
+                        <option value="Pesonal project"{{#if (theTypeR project.ptype)}} selected="selected"{{/if}}>Personal project</option>
                           <option value="School project"{{#if (theTypeS project.ptype)}} selected="selected"{{/if}}>School project</option>
                             <option value="Other"{{#if (theTypeO project.ptype)}} selected="selected"{{/if}}>Other</option>
                     </select>
