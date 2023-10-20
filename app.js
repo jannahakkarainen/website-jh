@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 const session = require('express-session')
 const connectSqlite3 = require('connect-sqlite3')
 const cookieParser = require('cookie-parser')
+const bcrypt = require('bcrypt');
 
 
 
@@ -127,27 +128,34 @@ app.use(session({
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-//
 
-//check the login and password of a user
 app.post('/login', (request, response) => {
-  const un = request.body.un
-  const pw = request.body.pw
+  const un = request.body.un;
+  const pw = request.body.pw;
 
-  if (un=="janna" & pw=="6789") {
-    console.log("janna is logged in!")
-    request.session.isAdmin = true
-    request.session.isLoggedIn = true
-    request.session.name = "Janna"
-    response.redirect('/')
-  } else {
-    console.log('Bad user and/or bad password')
-    request.session.isAdmin = false
-    request.session.isLoggedIn = false
-    request.session.name = ""
-    response.redirect('/login')
-  }
-})
+  const user = {
+    username: "janna",
+    passwordHash: "$2b$12$03zAyScxCJevdWY8yYcNAu9J4J50H94Wutj22M9Jp2lMlPNfpajaq", 
+  };
+
+  bcrypt.compare(pw, user.passwordHash, function(err, result) {
+    if (err) {
+      console.log("Error in comparing encryption: ", err);
+    } else if (result) {
+      console.log('User is logged in!');
+      request.session.isAdmin = true;
+      request.session.isLoggedIn = true;
+      request.session.name = user.username;
+      response.redirect("/");
+    } else {
+      console.log('User is NOT logged in!');
+      response.redirect("/login");
+    }
+  });
+});
+
+
+
 
 
 
@@ -161,10 +169,21 @@ app.set('views', './views');
 // define static directory "public" to access css/ and img/
 app.use(express.static('public'))
 
+
 // CONTROLLER (THE BOSS)
 // defines route "/"
 app.get('/', function(request, response){
     console.log("SESSION: ", request.session)
+
+  /*saltRounds = 12
+  bcrypt.hash("6789", saltRounds, function(err, hash) {
+    if (err) {
+      console.log("Error encrypting the password: ", err)
+    } else {
+      console.log("Hashed password (GENERATE only ONCE): ", hash)
+    }
+  });*/
+
     const model={
       isLoggedIn: request.session.isLoggedIn,
       name: request.session.name,
@@ -172,6 +191,7 @@ app.get('/', function(request, response){
     }
   response.render('home.handlebars', model)
 });
+
 
 app.get('/about', function(request, response){
   const model={
@@ -214,8 +234,37 @@ app.get('/projects', function(request, response){
 })
 
 
+// sends the form for a new project
+app.get('/projects/new', (req, res) => {
+  if (req.session.isLoggedIn==true && req.session.isAdmin==true) {
+    const model = {
+      isLoggedIn: req.session.isLoggedIn,
+      name: req.session.name,
+      isAdmin: req.session.isAdmin,
+    }
+    res.render('newproject.handlebars', model)
+  } else {
+    res.redirect('/login');
+  }
+});
 
-
+app.post('/projects/new', (req, res) => {
+  const newp = [
+    req.body.projname, req.body.projyear, req.body.projdesc, req.body.projtype, req.body.projimg,
+  ]
+  if (req.session.isLoggedIn==true && req.session.isAdmin==true) {
+    db.run("INSERT INTO projects (pname, pyear, pdesc, ptype, pimgURL) VALUES (?, ?, ?, ?, ?)", newp, (error) => {
+      if (error) {
+        console.log("ERROR: ", error)
+      } else {
+        console.log("Line added into the projects table!")
+      }
+      res.redirect('/projects')
+    })
+  } else {
+    res.redirect('/login')
+  }
+})
 
 
 app.get('/projects/:id', function(request, response) {
@@ -232,11 +281,6 @@ app.get('/projects/:id', function(request, response) {
     }
   });
 });
-
-
-
-
-
 
 
 //renders the login page
@@ -359,37 +403,6 @@ app.get('/projects/Delete/:id', (request, response) => {
   }
 })
 
-// sends the form for a new project
-app.get('/projects/new', (req, res) => {
-  if (req.session.isLoggedIn==true && req.session.isAdmin==true) {
-    const model = {
-      isLoggedIn: req.session.isLoggedIn,
-      name: req.session.name,
-      isAdmin: req.session.isAdmin,
-    }
-    res.render('newproject.handlebars', model)
-  } else {
-    res.redirect('login')
-  }
-});
-
-app.post('/projects/new', (req, res) => {
-  const newp = [
-    req.body.projname, req.body.projyear, req.body.projdesc, req.body.projtype, req.body.projimg,
-  ]
-  if (req.session.isLoggedIn==true && req.session.isAdmin==true) {
-    db.run("INSERT INTO projects (pname, pyear, pdesc, ptype, pimgURL) VALUES (?, ?, ?, ?, ?)", newp, (error) => {
-      if (error) {
-        console.log("ERROR: ", error)
-      } else {
-        console.log("Line added into the projects table!")
-      }
-      res.redirect('/projects')
-    })
-  } else {
-    res.redirect('/login')
-  }
-})
 
 app.get('/projects/update/:id', (req, res) => {
   const id = req.params.id
