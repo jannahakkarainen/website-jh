@@ -116,12 +116,12 @@ body {
 
 .centerVert {
     display: flex;
-    flex-direction: column;
+    flex-direction:column-reverse;
     justify-content: space-around;
 }
 
 .padding {
-    padding: 8px;
+    padding: 10px;
     box-sizing: border-box;
 }
 

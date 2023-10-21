@@ -4,12 +4,25 @@
         <div class="text2">
             <p>My name is Janna Hakkarainen and I'm a 24-year-old Computer Engineering student. <br />
             Here's my cv for a closer look at my work experience and education so far. <br />
-            If you want an even closer look at my education, please visit my  <a style="color: #a78255;" href="/education">education page</a> to read about the classes I have taken so far.</p>
+            If you want to take a look at my education on university level, please visit my  <a style="color: #a78255;" href="/education">education page</a> to read about the classes I have taken so far at Jönköping University.<br />
+            If you only want a look at my work experience, keep scrolling!</p>
         </div>
 
         <div class="image-container">
-            <img class=image src="/img/img6.png" alt="Cv part 1">
-            <img class=image src="/img/img7.png" alt="Cv part 2">
+            <img class="image" src="/img/img6.png" alt="Cv part 1">
+            <img class="image" src="/img/img7.png" alt="Cv part 2">
         </div>
+    </div>
+
+    <div>
+        <h2>Work Experience</h2>
+        {{#each workExperience}}
+            <div class="work-experience">
+                <p class="text">{{wposition}} </p> 
+                    Year: {{wyear}} <br />
+                    Company: {{wcompany}} <br />
+                    City: {{wcity}}</p> 
+            </div>
+        {{/each}}
     </div>
 </div>

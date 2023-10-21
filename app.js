@@ -55,9 +55,9 @@ db.run("CREATE TABLE skills (sid INTEGER PRIMARY KEY, sname TEXT NOT NULL, sdesc
 console.log("---> Table skills created!") 
 const skills=[
 {"id":"1", "name": "C++", "type": "Programming language", "desc": "Programming with C++."},
-{"id":"2", "name": "NoSQL", "type": "Programming language", "desc": "Working with databases in NoSQL."},
-{"id":"3", "name": "html", "type": "Markup language", "desc": "Creating web pages with html."},
-{"id":"4", "name": "css", "type": "Stylesheet language", "desc": "Designing web pages with css."},
+{"id":"2", "name": "MSSQL", "type": "Programming language", "desc": "Working with databases in MSSQL."},
+{"id":"3", "name": "HTML", "type": "Markup language", "desc": "Creating web pages with HTML."},
+{"id":"4", "name": "CSS", "type": "Stylesheet language", "desc": "Designing web pages with CSS."},
 {"id":"5", "name": "Javascript", "type": "Programming language", "desc": "Programming with Javascript."}, 
 {"id":"6", "name": "Adobe-Programs", "type": "Photo editing programs", "desc": "Using all adobe programs to edit photos"},
 ] 
@@ -102,6 +102,48 @@ db.run("INSERT INTO education (eid, ename, ehp, edesc) VALUES (?, ?, ?, ?)", [on
 console.log("Line added into the education table!") } 
 }) }) 
 } }) 
+
+
+
+// creates table workExperience at startup
+db.run(
+  "CREATE TABLE workExperience (wid INTEGER PRIMARY KEY, wyear TEXT NOT NULL, wposition TEXT NOT NULL, wcompany TEXT NOT NULL, wcity TEXT NOT NULL)",
+  (error) => {
+    if (error) {
+      // tests error: display error
+      console.log("ERROR: ", error);
+    } else {
+      // tests error: no error, the table has been created
+      console.log("---> Table workExperience created!");
+      const workExperience = [
+        {"id": "1", "year": "2021-2022", "position": "Cashier and distributor", "company": "PostNord Gislaved", "city": "Gislaved, Sweden"},
+        {"id": "2", "year": "2018-2020", "position": " Distributor", "company": "PostNord Gnosjö ", "city": "Gnosjö, Sweden"},
+        {"id": "3", "year": "2018", "position": "Distributor","company": "PostNord Smålandsstenar", "city": "Smålandsstenar, Sweden"},
+        {"id": "4", "year": "2016-2018", "position": "Cleaner", "company": "Elka AB", "city": "Hillerstorp, Sweden"},
+        {"id": "5", "year": "2015", "position": "Stable Worker", "company": "Isabergs Ridklubb", "city": "Hestra, Sweden"}
+      ];
+
+      // inserts workExperience
+      workExperience.forEach((oneWorkExperience) => {
+        db.run(
+          "INSERT INTO workExperience (wid, wyear, wposition, wcompany, wcity) VALUES (?, ?, ?, ?, ?)",
+          [oneWorkExperience.id, oneWorkExperience.year, oneWorkExperience.position, oneWorkExperience.company, oneWorkExperience.city],
+          (error) => {
+            if (error) {
+              console.log("ERROR: ", error);
+            } else {
+              console.log("Line added into the work experience table!");
+            }
+          }
+        );
+      });
+    }
+  }
+);
+
+
+
+
 
 
 //---------
@@ -193,14 +235,43 @@ app.get('/', function(request, response){
 });
 
 
-app.get('/about', function(request, response){
-  const model={
-    isLoggedIn: request.session.isLoggedIn,
-    name: request.session.name,
-    isAdmin: request.session.isAdmin
-  }
-  response.render('about.handlebars', model)
+
+
+
+
+
+app.get('/about', function(request, response) {
+  db.all("SELECT * FROM workExperience", function(error, workExperience) {
+    if (error) {
+      const model = {
+        hasDatabaseError: true,
+        theError: error,
+        workExperience: [], // Empty array for work experience
+        isLoggedIn: request.session.isLoggedIn,
+        name: request.session.name,
+        isAdmin: request.session.isAdmin
+      };
+
+      // Renders the page with the model
+      response.render("about.handlebars", model);
+    } else {
+      const model = {
+        hasDatabaseError: false,
+        theError: "",
+        workExperience: workExperience, // Pass work experience data
+        isLoggedIn: request.session.isLoggedIn,
+        name: request.session.name,
+        isAdmin: request.session.isAdmin
+      };
+
+      // Renders the page with the model
+      response.render("about.handlebars", model);
+    }
+  });
 });
+
+
+
 
 
 // renders the /projects route view
@@ -355,6 +426,7 @@ app.get('/education', function(request, response){
     }
   });
 });
+
 
 
 
